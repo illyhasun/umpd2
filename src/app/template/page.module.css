@@ -1,0 +1,20 @@
+.main{
+    padding: 25px 50px 50px 50px;
+}
+.template{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--primary-font-color);
+    border-bottom: none;
+    padding: 5px 10px;
+}
+.template:nth-child(2n){
+    background-color: lightgray;
+}
+.template:last-child{
+    border-bottom: 1px solid var(--primary-font-color);
+}
+.template button{
+    padding: 5px 10px;
+}

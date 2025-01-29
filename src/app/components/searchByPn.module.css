@@ -1,0 +1,27 @@
+.search {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+.inputContainer{
+    display: flex;
+    flex-direction: column;
+}
+.inputContainer input{
+    padding: 5px;
+    border: 1px solid #000;
+}
+.search button{
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    background-color: lightgray;
+    border: 1px solid #000;
+    cursor: pointer;
+}
+.search button img{
+    margin-right: 5px;
+    height: 15px;
+    width: auto;
+}

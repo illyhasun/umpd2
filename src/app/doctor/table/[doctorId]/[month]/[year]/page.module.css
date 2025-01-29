@@ -1,0 +1,162 @@
+.table {
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    width: calc(100% / 50);
+    height: 20px;
+    text-align: center;
+    border: 1.5px solid var(--primary-font-color);
+    padding: 0 5px;
+}
+
+.table td:nth-child(2n+3) {
+    border: none;
+    border-right: 0.5px solid var(--primary-font-color);
+    border-bottom: 1.5px solid var(--primary-font-color);
+}
+.table td:nth-child(2n+4) {
+    border: none;
+    border-right: 1.5px solid var(--primary-font-color);
+    border-bottom: 1.5px solid var(--primary-font-color);
+}
+
+.scheduled {
+    background-color: green;
+}
+
+.notScheduled {
+    background-color: white;
+}
+
+.selected {
+    background-color: #FFD6A5;
+}
+
+.o {
+    background-color: #CAFFBF;
+}
+
+.n {
+    background-color: #FFADAD;
+}
+
+.d {
+    background-color: #9BF6FF;
+}
+
+.c {
+    background-color: #A0C4FF;
+}
+
+.r {
+    background-color: #BDB2FF;
+}
+
+.h {
+    background-color: #FFC6FF;
+}
+
+.delete {
+    background-color: tomato;
+}
+
+.p {
+    background-color: #FDFFB6;
+}
+
+.info {
+    display: flex;
+    justify-content: space-between;
+    padding: 25px;
+    background-color: var(--primary-bg-color);
+}
+
+.doctorInfo {
+    display: flex;
+}
+
+.doctorInfo p {
+    margin-left: 15px;
+}
+
+.doctorInfo p,
+.doctorInfo h1 {
+    color: var(--primary-font-color);
+}
+
+.types {
+    display: flex;
+}
+
+.types button {
+    width: 20%;
+    padding: 10px;
+    border: 1px solid var(--primary-font-color);
+    border-right: none;
+    border-bottom: none;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: 0.5s;
+}
+
+.types button:hover {
+    opacity: 1;
+}
+
+.hours:nth-child(-n + 8) {
+    background-color: var(--secondary-bg-color);
+    color: var(--secondary-font-color);
+}
+
+.hours:nth-last-child(-n + 2) {
+    background-color: var(--secondary-bg-color);
+    color: var(--secondary-font-color);
+}
+
+.holiday {
+    background-color: #FFEBEB;
+}
+
+.weekend {
+    background-color: #EBF2FF;
+}
+
+.a {
+    padding: 2px 4px;
+    background-color: #fff;
+    margin-right: 10px;
+}
+
+.printMonth {
+    display: none;
+}
+
+@media print {
+    /* .print {
+        display: flex;
+        align-items: flex-start;
+        padding: 10px;
+    } */
+
+    .table th,
+    .table td {
+        width: calc(100% / 50);
+        height: 5px;
+        padding: 0 2px;
+        font-size: 10px;
+    }
+
+    .monthYear {
+        display: none;
+    }
+
+    .types {
+        display: none;
+    }
+
+    .printMonth {
+        display: block;
+    }
+}

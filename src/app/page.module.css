@@ -1,0 +1,11 @@
+.people{
+  padding: 25px 50px 50px 50px;
+}
+.container{
+  display: flex;
+  justify-content: space-between;
+  
+}
+.buttons{
+  display: flex;
+}

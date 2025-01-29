@@ -1,0 +1,42 @@
+.doctorList{
+    border: 1px solid #000;
+    margin-top: 10px;
+    border-bottom: none;
+}
+.doctor{
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #000;
+}
+.doctor a, .doctor button, .doctor p{
+    text-decoration: none;
+    padding: 10px 20px;
+    border: none;
+    background-color: var(--primary-color);
+}
+.doctor{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.doctor:nth-child(2n){
+    background-color: lightgray;
+}
+.actions{
+    display: flex;
+}
+.actions button, .actions a{
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    background-color: lightgray;
+    border: 1px solid #000;
+    margin-right: 10px;
+    max-height: max-content;
+    cursor: pointer;
+}
+.actions button img, .actions a img{
+    margin-right: 5px;
+    height: 15px;
+    width: auto;
+}

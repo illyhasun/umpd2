@@ -1,0 +1,16 @@
+.button{
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    background-color: lightgray;
+    border: 1px solid #000;
+    margin-right: 10px;
+    max-height: max-content;
+    cursor: pointer;
+
+}
+.button img{
+    margin-right: 5px;
+    height: 15px;
+    width: auto;
+}

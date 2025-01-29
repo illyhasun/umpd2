@@ -1,0 +1,23 @@
+
+.error, .loading, .message{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 50px;
+    padding: 0 20px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    color: var(--secondary-font-color);
+
+}
+
+.error{
+    background-color: red;
+}
+.loading{
+    background-color: gray;
+}
+.message{
+    background-color: green;
+}
+

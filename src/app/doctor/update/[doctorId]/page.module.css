@@ -1,0 +1,71 @@
+.update {
+    padding: 25px 50px 50px 50px;
+}
+
+.update form {
+    width: 400px;
+    margin: 0 auto
+}
+
+.update form button {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    max-height: max-content;
+    min-width: 100px;
+    justify-content: center;
+}
+
+.inputContainer input,
+.inputsContainer select {
+    padding: 5px;
+    width: calc(400px/3);
+}
+
+.update form button img {
+    margin-right: 5px;
+}
+
+.personalInfo {
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.mapInput {
+    margin-bottom: 25px;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: lightgray;
+    padding-left: 10px;
+}
+
+.inputsContainer {
+    display: flex;
+    align-items: flex-end;
+    margin: 5px 0;
+}
+
+.inputsContainer select {
+    max-height: max-content;
+}
+
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.workingDays {
+    display: flex;
+}
+
+.dayInputContainer {
+    width: calc(100%/7);
+}
+.dayInputContainer input{
+    width: 100%;
+}

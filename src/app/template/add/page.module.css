@@ -1,0 +1,39 @@
+.add{
+    padding: 25px 50px 50px 50px;
+    width: 100%;
+}
+.add form{
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    margin: 0 auto;
+}
+.inputContainer{
+    display: flex;
+    flex-direction: column;
+}
+.inputContainer input, .inputContainer select{
+    padding: 5px;
+    margin-bottom: 10px;
+}
+.inputsContainer{
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+.inputsContainer input{
+    width: 50px;
+    border: none;
+    border-bottom: 1px solid var(--primary-font-color);
+    outline: none;
+    text-align: center;
+}
+.add button{
+    max-width: max-content;
+    align-self: center;
+    padding: 5px;
+    padding: 5px;
+    background-color: lightgray;
+    border: 1px solid #000;
+    cursor: pointer;
+}

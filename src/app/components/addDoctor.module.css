@@ -1,0 +1,14 @@
+.link{
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    background-color: lightgray;
+    border: 1px solid #000;
+    max-height: max-content;
+    cursor: pointer;
+}
+.link img{
+    margin-right: 5px;
+    height: 15px;
+    width: auto;
+}
