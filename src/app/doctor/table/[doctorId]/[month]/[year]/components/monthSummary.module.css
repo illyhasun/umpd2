@@ -34,6 +34,7 @@
         margin-top: 10px;
     }
     .signatures{
+        display: block;
         margin-top: 50px;
     }
     .signatures p{

@@ -4,7 +4,7 @@ const shiftTemplateSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        uniqe: true
+        unique: true
     },
     monday: {
         from: {

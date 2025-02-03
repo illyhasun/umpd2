@@ -22,7 +22,7 @@ export default function CsvShiftsForm({doctorId, fetchDoctorData}) {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className={classes.form}>
             <div>
                 <label>Výberte scv soubor:</label>
                 <input

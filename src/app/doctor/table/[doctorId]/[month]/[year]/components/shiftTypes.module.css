@@ -1,0 +1,50 @@
+.types {
+    display: flex;
+}
+
+.types button {
+    width: 20%;
+    padding: 10px;
+    border: 1px solid var(--primary-font-color);
+    border-right: none;
+    border-bottom: none;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: 0.5s;
+}
+
+.types button:hover {
+    opacity: 1;
+}
+
+.o {
+    background-color: #CAFFBF;
+}
+
+.n {
+    background-color: #FFADAD;
+}
+
+.d {
+    background-color: #9BF6FF;
+}
+
+.c {
+    background-color: #A0C4FF;
+}
+
+.r {
+    background-color: #BDB2FF;
+}
+
+.h {
+    background-color: #FFC6FF;
+}
+.delete {
+    background-color: tomato;
+}
+@media print{
+    .types {
+        display: none;
+    }
+}

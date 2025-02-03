@@ -3,11 +3,9 @@ import { useEffect, useState } from 'react';
 
 import { useHttp } from '@/hooks/useHttpHook';
 
-import Notification from '@/components/ui/notification';
 import DoctorList from './components/doctorList';
 import SearchByPn from './components/searchByPn';
-import AllDoctors from './components/allDoctors';
-import AddDoctor from './components/addDoctor';
+
 
 import classes from './page.module.css'
 
@@ -19,49 +17,45 @@ export default function Doctors() {
     const [doctors, setDoctors] = useState([]);
 
     const allDoctors = async () => {
+        const cachedDoctors = localStorage.getItem('doctors');
+    
+        if (cachedDoctors) {
+            setDoctors(JSON.parse(cachedDoctors));
+            return;
+        }
+    
         try {
-            console.log('getall')
             const response = await req("/api/doctor/getAll");
-            const sortedDoctors = response.doctors.sort((a, b) =>
-                a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-            );
-            setDoctors(sortedDoctors || []);
+            setDoctors(response.doctors || []);
+            localStorage.setItem('doctors', JSON.stringify(response.doctors || []));
         } catch (error) {
-            console.log("Chyba při načítání dat lekářů z databáze", error);
+            console.error("Chyba při načítání dat lekářů z databáze", error);
             setDoctors([]);
         }
-    }
+    };
 
     const deleteDoctor = async (doctor) => {
         try {
-            const confirmed = window.confirm(`Chcete smazat všechna data lékaře "${doctor?.name} ${doctor?.personalNumber}" ?`);
+            const confirmed = window.confirm(`Chcete smazat všechna data lékaře "${doctor?.name} ${doctor?.personalNumber}"?`);
             if (confirmed) {
                 await req(`/api/doctor/delete/${doctor._id}`, 'DELETE');
-                setDoctors((prevDoctors) => prevDoctors.filter((prevDoctors) => prevDoctors._id !== doctor._id));
+                setDoctors((prevDoctors) => prevDoctors.filter((prev) => prev._id !== doctor._id));
+                localStorage.removeItem('doctors'); // Чистим кеш, чтобы при следующем вызове запрос ушел на сервер
             }
         } catch (error) {
             console.log(error);
         }
     };
+    
 
     useEffect(() => {
         allDoctors()
     }, [])
 
     return (
-        <main className={classes.people}>
-            {/* <Notification loading={loading} error={error} message={message} /> */}
-            <div className={classes.container}>
-                <SearchByPn setDoctors={setDoctors} req={req} loading={loading} allDoctors={allDoctors} />
-
-                {/* <div className={classes.buttons}>
-                    <AllDoctors setDoctors={setDoctors} req={req} loading={loading} />
-                    <AddDoctor />
-                </div> */}
-            </div>
-
+        <main className={classes.doctors}>
+            <SearchByPn setDoctors={setDoctors} req={req} loading={loading} allDoctors={allDoctors} />
             <DoctorList doctors={doctors} deleteDoctor={deleteDoctor} />
-
         </main>
     );
 };

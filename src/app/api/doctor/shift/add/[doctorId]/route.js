@@ -21,49 +21,61 @@ export async function PATCH(req, { params: { doctorId } }) {
         // Найти все смены на ту же дату
         const existingShifts = doctor.shifts.filter(
             shift =>
-                Number(shift.date.day) === Number(date.day) &&
-                Number(shift.date.month) === Number(date.month) &&
-                Number(shift.date.year) === Number(date.year)
+                shift.date.day == date.day &&
+                shift.date.month == date.month &&
+                shift.date.year == date.year
         );
 
-        let mergedFrom = Number(newFrom);
-        let mergedTo = Number(newTo);
-
-        // Найти пересекающиеся смены
         const overlappingShifts = existingShifts.filter(shift => {
             const existingFrom = Number(shift.from);
             const existingTo = Number(shift.to);
-            console.log(mergedFrom, '<=', existingTo, mergedTo, '>=', existingFrom)
 
-            // return (
-            //     (mergedFrom <= existingTo && mergedTo >= existingFrom) || // Пересечение
-            //     (mergedTo === existingFrom) ||                           // Соприкасаются в начале
-            //     (mergedFrom === existingTo)                              // Соприкасаются в конце
-            // ); 
-            
-            return(
-                (mergedFrom < existingTo && mergedTo > existingFrom)
+            return (
+                (Number(newFrom) <= existingTo && Number(newTo) >= existingFrom)
             )
         });
+        // new shift 10-20
+        //old shifts 8-12 14-16 18-21
 
-        console.log('overlap', overlappingShifts)
+        const newShifts = []
 
-        // Расширить границы смены, чтобы включить все пересекающиеся
         for (const shift of overlappingShifts) {
-            mergedFrom = Math.min(mergedFrom, Number(shift.from));
-            mergedTo = Math.max(mergedTo, Number(shift.to));
+            if (shift.to <= newFrom || shift.from >= newTo) {
+                newShifts.push(shift);
+            } else {
+                if (shift.from < newFrom) {
+                    newShifts.push({ date, from: shift.from, to: newFrom, type: shift.type });
+                }
+                if (shift.to > newShift.to) {
+                    newShifts.push({ date, from: newTo, to: shift.to, type: shift.type });
+                }
+            }
         }
 
-        // Удалить все пересекающиеся смены из массива
-        doctor.shifts = doctor.shifts.filter(shift => !overlappingShifts.includes(shift));
+        newShifts.push(newShift);
+        newShifts.sort((a, b) => a.from - b.from);
 
-        // Добавить объединённую смену
-        doctor.shifts.push({
-            date,
-            from: mergedFrom.toString(),
-            to: mergedTo.toString(),
-            type,
-        });
+        const mergedShifts = newShifts.reduce((acc, shift) => {
+            const lastShift = acc[acc.length - 1];
+
+            if (lastShift && lastShift.type === shift.type && lastShift.to === shift.from) {
+                // Если смена того же типа и стыкуется, объединяем её с предыдущей
+                lastShift.to = shift.to;
+            } else {
+                // Иначе добавляем новую запись
+                acc.push(shift);
+            }
+
+            return acc;
+        }, []);
+
+        doctor.shifts = doctor.shifts.filter(
+            shift => !overlappingShifts.some(
+                s => s.from === shift.from && s.to === shift.to && s.date.day === shift.date.day
+            )
+        );
+
+        doctor.shifts.push(...mergedShifts);
 
         // Сохранить обновленный документ
         await doctor.save();
@@ -81,4 +93,3 @@ export async function PATCH(req, { params: { doctorId } }) {
         );
     }
 }
-

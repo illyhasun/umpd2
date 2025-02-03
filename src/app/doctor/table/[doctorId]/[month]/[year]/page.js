@@ -11,14 +11,14 @@ import CsvShiftsForm from './components/infoHeader/csvShiftsForm';
 import MonthYearSelect from './components/infoHeader/monthYearSelect';
 import TemplateSelect from './components/infoHeader/templateSelect';
 import TemplateDelete from './components/infoHeader/templateDelete';
+import ShiftTypes from './components/shiftTypes';
+import Table from './components/table';
 
-export default function Table({ params: { doctorId, month, year } }) {
-
+export default function DoctorShifts({ params: { doctorId, month, year } }) {
 
     const { req, loading, error, message } = useHttp();
     const [doctor, setDoctor] = useState(null);
     const [selectedShiftRange, setSelectedShiftRange] = useState({ date: null, from: null, to: null });
-    const [isDragging, setIsDragging] = useState(false);
 
     const paramsMonth = Number(month, 10);
     const paramsYear = Number(year, 10);
@@ -83,8 +83,6 @@ export default function Table({ params: { doctorId, month, year } }) {
         }
 
 
-
-
         // Вычисляем даты Пасхи и связанных праздников
         const easter = getEasterDate(year);
         const goodFriday = new Date(easter.getFullYear(), easter.getMonth(), easter.getDate() - 2); // Velký pátek
@@ -117,72 +115,6 @@ export default function Table({ params: { doctorId, month, year } }) {
 
     const days = getDaysInMonth(paramsMonth, paramsYear);
 
-    function isShiftScheduled(day, hour) {
-        const shift = shifts.find(shift => {
-            const shiftDate = `${shift.date.day}/${shift.date.month}/${shift.date.year}`;
-            const shiftStart = parseFloat(shift.from);
-            const shiftEnd = parseFloat(shift.to);
-            return shiftDate === day && hour >= shiftStart && hour < shiftEnd;
-        });
-        return shift ? shift.type : null;
-    }
-
-    const handleCellMouseDown = (day, hour) => {
-        setIsDragging(true);
-        setSelectedShiftRange({ date: day, from: hour, to: hour });
-    };
-
-    const handleCellMouseEnter = (day, hour) => {
-        if (isDragging && selectedShiftRange.date === day) {
-            setSelectedShiftRange(prev => ({ ...prev, to: hour }));
-        }
-    };
-
-    const handleMouseUp = () => {
-        setIsDragging(false);
-    };
-
-    const handleConfirmShift = async (type = 'o') => {
-        const { date, from, to } = selectedShiftRange;
-        const [day, month, year] = date.split('/');
-
-        try {
-            const response = await req(`/api/doctor/shift/add/${doctorId}`, 'PATCH', {
-                date: { day, month, year },
-                from: from.toString(),
-                to: (to + 0.5).toString(), // half-hour intervals
-                type
-            });
-
-            if (response.success) {
-                fetchDoctorData()
-                setSelectedShiftRange({ date: null, from: null, to: null });
-            }
-        } catch (error) {
-            console.error("Failed to add shift", error);
-        }
-    };
-
-    const handleDeleteShift = async () => {
-        const { date, from, to } = selectedShiftRange;
-        const [day, month, year] = date.split('/');
-
-        try {
-            const response = await req(`/api/doctor/shift/delete/${doctorId}`, 'PATCH', {
-                date: { day, month, year },
-                from: from.toString(),
-                to: (to + 0.5).toString()
-            });
-
-            if (response.success) {
-                console.log("Shift deleted successfully");
-                fetchDoctorData()
-                setSelectedShiftRange({ date: null, from: null, to: null });
-            }
-        } catch (error) {
-            console.error("Failed to delete shift", error);
-        }
-    };
 
 
     const filteredShifts = shifts.filter(shift => {
@@ -215,22 +147,12 @@ export default function Table({ params: { doctorId, month, year } }) {
         return deducedResult
     }
 
-
-
     const workingTime = getRelevantItem(doctor?.workingTime)
     const workingMode = getRelevantItem(doctor?.workingMode)
 
-
-    // if (loading) return <h1>Loading...</h1>;
-    if (error) return <h1>Error: {error}</h1>;
-
-
     return (
 
-        <main className={classes.tableContainer} onMouseUp={handleMouseUp}>
-
-            {/* <Message error={error} message={message} /> */}
-
+        <main className={classes.tableContainer}>
 
             <div className={classes.info}>
                 <DoctorInfo doctor={doctor} workingTime={workingTime} workingMode={workingMode} />
@@ -244,94 +166,11 @@ export default function Table({ params: { doctorId, month, year } }) {
                         <TemplateDelete doctorId={doctorId} fetchDoctorData={fetchDoctorData} month={month} year={year} />}
                 </div>
 
-                <div className={classes.printMonth}>
-                    <p>{month}/{year}</p>
-                </div>
+                <p className={classes.printMonth}>{month}/{year}</p>
             </div>
-
-
-            {selectedShiftRange.date && (
-                <div className={classes.types}>
-                    <button onClick={() => handleConfirmShift('o')} className={classes.o}>Odpracovaná hodina</button>
-                    <button onClick={() => handleConfirmShift('n')} className={classes.n}>Pracovní neschopnost</button>
-                    <button onClick={() => handleConfirmShift('d')} className={classes.d}>Dovolená</button>
-                    <button onClick={() => handleConfirmShift('c')} className={classes.c}>Služební cesta</button>
-                    <button onClick={() => handleConfirmShift('r')} className={classes.r}>Ošetř.člena rodiny</button>
-                    <button onClick={() => handleConfirmShift('p')} className={classes.p}>Prescas</button>
-                    <button onClick={() => handleConfirmShift('h')} className={classes.h}>Pohotovost</button>
-
-                    <button onClick={handleDeleteShift} className={classes.delete}>Smazat</button>
-
-                </div>
-            )}
-            <div className={classes.print}>
-
-                <table className={classes.table}>
-                    <thead>
-                        <tr>
-                            <th>Den</th>
-                            <th>Datum</th>
-                            {/* <th className={classes.hours} colSpan="2">0</th> */}
-                            {Array.from({ length: 24 }, (_, hourIndex) => (
-                                <th className={classes.hours} colSpan="2" key={`hour-${hourIndex}`}>{hourIndex + 1}</th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {days.map((dayObj, index) => (
-                            <tr key={`day-${index}`} className={classes.tr}>
-                                <td className={holidays.includes(dayObj.formattedDate) ? classes.holiday : dayObj.isWeekend ? classes.weekend : ''}>{dayObj.dayOfWeek}</td>
-                                <td className={holidays.includes(dayObj.formattedDate) ? classes.holiday : dayObj.isWeekend ? classes.weekend : ''}>{dayObj.day.toString().length < 2 ? `0${dayObj.day}` : dayObj.day}</td>
-                                {Array.from({ length: 48 }, (_, halfHourIndex) => {
-                                    const hour = (halfHourIndex / 2);
-                                    const isScheduled = isShiftScheduled(dayObj.formattedDate, hour);
-                                    const isInRange =
-                                        selectedShiftRange.date === dayObj.formattedDate &&
-                                        hour >= selectedShiftRange.from &&
-                                        hour <= selectedShiftRange.to;
-                                    return (
-                                        <td
-                                            key={`hour-${index}-${halfHourIndex}`}
-                                            className={
-                                                isInRange ? classes.selected :
-                                                    isScheduled === 'o' ? classes.o :
-                                                        isScheduled === 'n' ? classes.n :
-                                                            isScheduled === 'd' ? classes.d :
-                                                                isScheduled === 'c' ? classes.c :
-                                                                    isScheduled === 'r' ? classes.r :
-                                                                        isScheduled === 'h' ? classes.h :
-                                                                            isScheduled === 'p' ? classes.p :
-                                                                                holidays.includes(dayObj.formattedDate) ? classes.holiday :
-                                                                                    dayObj.isWeekend ? classes.weekend :
-                                                                                        classes.notScheduled
-
-                                            }
-
-
-                                            onMouseDown={() => handleCellMouseDown(dayObj.formattedDate, hour)}
-                                            onMouseEnter={() => handleCellMouseEnter(dayObj.formattedDate, hour)}
-                                        >
-                                            {
-                                                isInRange ? '' :
-                                                    isScheduled === 'o' ? 'O' :
-                                                        isScheduled === 'n' ? 'N' :
-                                                            isScheduled === 'd' ? 'D' :
-                                                                isScheduled === 'c' ? 'C' :
-                                                                    isScheduled === 'r' ? 'R' :
-                                                                        isScheduled === 'h' ? 'H' :
-                                                                            isScheduled === 'p' ? 'P' :
-                                                                                ''
-                                            }
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-
-                <MonthSummary doctor={doctor} days={days} holidays={holidays} workingTime={workingTime} filteredShifts={filteredShifts} year={year} month={month} />
-            </div>
+            <ShiftTypes selectedShiftRange={selectedShiftRange} setSelectedShiftRange={setSelectedShiftRange} fetchDoctorData={fetchDoctorData} doctorId={doctorId} setDoctor={setDoctor} />
+            <Table selectedShiftRange={selectedShiftRange} setSelectedShiftRange={setSelectedShiftRange} days={days} holidays={holidays} shifts={shifts} />
+            <MonthSummary doctor={doctor} days={days} holidays={holidays} workingTime={workingTime} filteredShifts={filteredShifts} year={year} month={month} />
 
         </main>
     );
