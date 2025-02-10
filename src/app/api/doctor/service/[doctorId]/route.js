@@ -15,8 +15,6 @@ export async function PATCH(req, {params: {doctorId}}) {
             );
         }
 
-        console.log(month, year, count)
-
         const doctor = await Doctor.findById(doctorId);
         if (!doctor) {
             return NextResponse.json(
@@ -29,7 +27,6 @@ export async function PATCH(req, {params: {doctorId}}) {
             service => service.month === Number(month) && service.year === Number(year)
         );
 
-        console.log(existingService)
 
         if (existingService) {
             existingService.count = count;

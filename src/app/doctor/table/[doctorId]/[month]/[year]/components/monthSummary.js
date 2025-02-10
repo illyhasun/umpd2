@@ -1,11 +1,6 @@
-import { useState } from 'react'
 import classes from './monthSummary.module.css'
-import { useHttp } from '@/hooks/useHttpHook'
 
 export default function MonthSummary({ doctor, days, workingTime, holidays, filteredShifts, year, month }) {
-
-    const [serviceCount, setServiceCount] = useState(doctor?.services.find(service => service.month === Number(month) && service.year === Number(year))?.count || 0)
-    const { req, message, loading, error } = useHttp()
 
     function calculatePartTimeNorm(hoursArray) {
 
@@ -34,30 +29,6 @@ export default function MonthSummary({ doctor, days, workingTime, holidays, filt
 
         return { totalHours, totalHolidayHours };
     }
-
-
-    const handleBlur = async (e) => {
-        const count = e.target.value;
-
-        if (!count || isNaN(Number(count)) || Number(count) === Number(serviceCount)) {
-            return;
-        }
-        try {
-            const response = await req(`/api/doctor/service/${doctor._id}`, 'PATCH', { month, year, count: Number(count) });
-
-            if (!response.success) {
-                console.error(data.message);
-                alert('Chyba.');
-            } else {
-                setServiceCount(count)
-                alert('Počet slůžb byl změněn');
-            }
-        } catch (error) {
-            console.error('Ошибка:', error);
-            alert('Ошибка сети.');
-        }
-    };
-
 
 
     const NIGHT_START = 22; // 10 PM
@@ -161,13 +132,7 @@ export default function MonthSummary({ doctor, days, workingTime, holidays, filt
                     </tr>
                     <tr>
                         <td>Počet služeb v měsíci</td>
-                        <td><input
-                            className={classes.input}
-                            onBlur={handleBlur}
-                            type='number'
-                            defaultValue={serviceCount}
-                        />
-                        </td>
+                        <td>{typeHours.h / 24}</td>
                     </tr>
                     <tr>
                         <td>Počet hodin PN:</td>

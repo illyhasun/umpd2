@@ -6,6 +6,8 @@ export async function PATCH(req, { params: { doctorId, year, month } }) {
     try {
         await connectDB();
 
+        const { e } = await req.json();
+
         // Преобразуем year и month из строки в число
         const targetYear = parseInt(year, 10);
         const targetMonth = parseInt(month, 10);
@@ -26,30 +28,16 @@ export async function PATCH(req, { params: { doctorId, year, month } }) {
                 { status: 404 }
             );
         }
+        const shifts = e ? doctor.eShifts : doctor.shifts || []
+
 
         // Удалить все смены за указанный месяц и год
-        const initialShiftCount = doctor.shifts.length;
+        shifts.splice(0, shifts.length, ...shifts.filter(
+            shift => !(Number(shift.date.year) === targetYear && Number(shift.date.month) === targetMonth)
+        ));
 
-        doctor.shifts = doctor.shifts.filter(
-            (shift) =>
-                !(Number(shift.date.year) === targetYear &&
-                  Number(shift.date.month) === targetMonth)
-        );
-
-        const updatedShiftCount = doctor.shifts.length;
-
-        // Сохранение изменений, если были удаленные смены
-        if (updatedShiftCount < initialShiftCount) {
-            await doctor.save();
-        }
-
-        return NextResponse.json(
-            {
-                success: true,
-                message: `${initialShiftCount - updatedShiftCount} shift(s) removed for ${targetMonth}/${targetYear}.`,
-            },
-            { status: 200 }
-        );
+        await doctor.save();
+        return NextResponse.json({ success: true, message: 'směny byli smazany', }, { status: 200 });
     } catch (err) {
         console.error("Error deleting shifts for the month", err);
         return NextResponse.json(

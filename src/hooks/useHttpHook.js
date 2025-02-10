@@ -4,12 +4,12 @@ import { useCallback, useState } from 'react';
 
 export const useHttp = () => {
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [message, setMessage] = useState('')
+  // const [loading, setLoading] = useState(false)
+  // const [error, setError] = useState(null)
+  // const [message, setMessage] = useState('')
 
   const req = useCallback(async (url, method = 'GET', body = null, headers = {}) => {
-    setLoading(true);
+    // setLoading(true);
 
     try {
 
@@ -24,22 +24,27 @@ export const useHttp = () => {
       const data = await res.json()
 
       if (!data.success) {
-        setError(data.message || 'Something went wrong..')
-        setLoading(false)
+        // setError(data.message || 'Something went wrong..')
+        // setLoading(false)
         return
       }
 
-      setMessage(data.message)
-      setLoading(false)
-      setError(null)
+      // setMessage(data.message)
+      // setLoading(false)
+      // setError(null)
 
       return data
 
     } catch (e) {
-      setLoading(false)
+      // setLoading(false)
       console.log(e)
     }
   }, [])
 
-  return { loading, req, error, message }
+  return {
+    // loading,
+    req,
+    // error,
+    // message
+  }
 };

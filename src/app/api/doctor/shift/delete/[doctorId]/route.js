@@ -7,7 +7,7 @@ export async function PATCH(req, { params: { doctorId } }) {
         await connectDB();
 
         const shiftToDelete = await req.json();
-        const { date, from: delFrom, to: delTo } = shiftToDelete;
+        const { date, from: delFrom, to: delTo, e } = shiftToDelete;
 
         // Найти документ врача
         const doctor = await Doctor.findById(doctorId);
@@ -17,17 +17,17 @@ export async function PATCH(req, { params: { doctorId } }) {
                 { status: 404 }
             );
         }
+        const shifts = e ? doctor.eShifts : doctor.shifts || []
 
         // Найти все смены на ту же дату
-        const existingShifts = doctor.shifts.filter(
+        const existingShifts = shifts.filter(
             shift =>
-                Number(shift.date.day) === Number(date.day) &&
-                Number(shift.date.month) === Number(date.month) &&
-                Number(shift.date.year) === Number(date.year)
+                shift.date.day == date.day &&
+                shift.date.month == date.month &&
+                shift.date.year == date.year
         );
 
 
-        let shiftUpdated = false;
 
         for (let i = 0; i < existingShifts.length; i++) {
             const shift = existingShifts[i];
@@ -37,22 +37,19 @@ export async function PATCH(req, { params: { doctorId } }) {
             // Проверка полного перекрытия
             if (delFrom <= existingFrom && delTo >= existingTo) {
                 // Удаление всей смены, так как она полностью покрыта временем удаления
-                doctor.shifts.splice(doctor.shifts.indexOf(shift), 1);
-                shiftUpdated = true;
+                shifts.splice(shifts.indexOf(shift), 1);
                 continue; // Переход к следующей смене
             }
 
             // Проверка перекрытия в начале смены
             if (delFrom <= existingFrom && delTo > existingFrom && delTo < existingTo) {
                 shift.from = delTo.toString();
-                shiftUpdated = true;
                 continue;
             }
 
             // Проверка перекрытия в конце смены
             if (delFrom > existingFrom && delFrom < existingTo && delTo >= existingTo) {
                 shift.to = delFrom.toString();
-                shiftUpdated = true;
                 continue;
             }
 
@@ -66,16 +63,13 @@ export async function PATCH(req, { params: { doctorId } }) {
                     type: shift.type // Сохраняем тип оригинальной смены
                 };
                 shift.to = delFrom.toString(); // Обновить конец текущей смены
-                doctor.shifts.push(newShift); // Добавить новую смену
-                shiftUpdated = true;
+                shifts.push(newShift); // Добавить новую смену
                 continue;
             }
         }
 
         // Сохранение изменений, если обновления были
-        if (shiftUpdated) {
-            await doctor.save();
-        }
+        await doctor.save();
 
         return NextResponse.json(
             { success: true, message: `Shift(s) updated or removed successfully.` },

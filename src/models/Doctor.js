@@ -58,10 +58,10 @@ const doctorSchema = new mongoose.Schema({
             default: [0, 0, 0, 0, 0, 0, 0]  // По умолчанию массив из 7 нулей
         }
     }],
-    shifts: [{
+    eShifts: [{
         date: {
             day: {
-                type: String,
+                type: Number,
                 required: true,
             },
             month: {
@@ -86,21 +86,34 @@ const doctorSchema = new mongoose.Schema({
             required: true
         }
     }],
-    services: [{
-        month: {
+    shifts: [{
+        date: {
+            day: {
+                type: Number,
+                required: true,
+            },
+            month: {
+                type: Number,
+                required: true,
+            },
+            year: {
+                type: Number,
+                required: true,
+            },
+        },
+        from: {
             type: Number,
             required: true,
         },
-        year: {
+        to: {
             type: Number,
             required: true,
         },
-        count: {
-            type: Number,
-            ruquired: true,
-            default: 0
+        type: {
+            type: String,
+            required: true
         }
-    }]
+    }],
 })
 
 export const Doctor = mongoose.models.Doctor || mongoose.model('Doctor', doctorSchema)

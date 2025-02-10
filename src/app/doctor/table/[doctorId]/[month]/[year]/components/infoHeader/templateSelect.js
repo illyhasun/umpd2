@@ -3,7 +3,7 @@ import { useHttp } from '@/hooks/useHttpHook';
 import classes from './templateSelect.module.css'
 import { useState, useEffect } from 'react';
 
-export default function TemplateSelect({doctorId, fetchDoctorData, month, year}) {
+export default function TemplateSelect({ doctorId, setDoctor, month, year, e }) {
 
     const [templates, setTemplates] = useState(null)
     const { req, message, loading, error } = useHttp()
@@ -26,13 +26,10 @@ export default function TemplateSelect({doctorId, fetchDoctorData, month, year})
     const handleConfirmTemplate = async (templateId) => {
         try {
             const response = await req(`/api/doctor/shift/add/template/${doctorId}`, 'PATCH', {
-                doctorId, templateId, month, year
+                doctorId, templateId, month, year, e
             });
 
-            if (response.success) {
-                console.log("Shift added successfully");
-                fetchDoctorData()
-            }
+            setDoctor(response.doctor)
         } catch (error) {
             console.error("Failed to add shift", error);
         }

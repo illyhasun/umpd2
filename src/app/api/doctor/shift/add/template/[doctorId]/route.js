@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { Doctor } from "@/models/Doctor";
 import { connectDB } from "@/utils/db";
-
 import { ShiftTemplate } from "@/models/ShiftTemplate";
+
 export async function PATCH(req) {
     try {
         await connectDB();
 
-        const { doctorId, templateId, month, year } = await req.json();
+        const { doctorId, templateId, month, year, e } = await req.json();
 
         // Проверяем, что все данные переданы
         if (!doctorId || !templateId || !month || !year) {
@@ -26,6 +26,20 @@ export async function PATCH(req) {
             );
         }
 
+        const shifts = e ? doctor.eShifts : doctor.shifts
+
+        // Проверяем, есть ли у врача смены в указанном месяце
+        const hasShifts = shifts.some(
+            (shift) => Number(shift.date.month) === Number(month) && Number(shift.date.year) === Number(year)
+        );
+
+        if (hasShifts) {
+            return NextResponse.json(
+                { success: false, message: "Shifts already exist for this month" },
+                { status: 400 }
+            );
+        }
+
         // Находим шаблон
         const template = await ShiftTemplate.findById(templateId);
         if (!template) {
@@ -35,7 +49,7 @@ export async function PATCH(req) {
             );
         }
 
-        // Получаем дни месяца
+        // Получаем количество дней в месяце
         const daysInMonth = new Date(year, month, 0).getDate();
 
         // Маппим дни недели из шаблона
@@ -45,7 +59,7 @@ export async function PATCH(req) {
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(year, month - 1, day);
             const dayOfWeek = dayOfWeekMap[date.getDay()];
-        
+
             // Получаем настройки смены для текущего дня недели
             const shiftSettings = template[dayOfWeek];
             if (shiftSettings && shiftSettings.from !== null && shiftSettings.to !== null) {
@@ -55,11 +69,11 @@ export async function PATCH(req) {
                         date: { day, month, year },
                         from: shiftSettings.from.toString(),
                         to: shiftSettings.pause.toString(),
-                        type: "o", // Тип смены
+                        type: "o",
                     });
                     newShifts.push({
                         date: { day, month, year },
-                        from: (shiftSettings.pause + 0.5).toString(), // Пауза + 30 минут
+                        from: (shiftSettings.pause + 0.5).toString(),
                         to: shiftSettings.to.toString(),
                         type: "o",
                     });
@@ -76,45 +90,16 @@ export async function PATCH(req) {
         }
 
         // Добавляем смены врачу
-        for (const newShift of newShifts) {
-            const existingShifts = doctor.shifts.filter(
-                shift =>
-                    Number(shift.date.day) === Number(newShift.date.day) &&
-                    Number(shift.date.month) === Number(newShift.date.month) &&
-                    Number(shift.date.year) === Number(newShift.date.year)
-            );
-
-            let merged = false;
-
-            for (let shift of existingShifts) {
-                const existingFrom = parseFloat(shift.from);
-                const existingTo = parseFloat(shift.to);
-
-                // Проверка на пересечение или соприкосновение
-                if (
-                    (parseFloat(newShift.from) <= existingTo && parseFloat(newShift.to) >= existingFrom) ||
-                    parseFloat(newShift.to) === existingFrom ||
-                    parseFloat(newShift.from) === existingTo
-                ) {
-                    // Объединяем смены
-                    shift.from = Math.min(existingFrom, parseFloat(newShift.from)).toString();
-                    shift.to = Math.max(existingTo, parseFloat(newShift.to)).toString();
-                    merged = true;
-                    break;
-                }
-            }
-
-            if (!merged) {
-                // Если пересечений нет, добавляем новую смену
-                doctor.shifts.push(newShift);
-            }
-        }
+        shifts.push(...newShifts);
 
         // Сохраняем изменения
         await doctor.save();
 
+        doctor.shifts = doctor.shifts.filter(shift => shift.date.month == month && shift.date.year == year);
+        doctor.eShifts = doctor.eShifts.filter(shift => shift.date.month == month && shift.date.year == year);
+
         return NextResponse.json(
-            { success: true, message: "Shifts added successfully" },
+            { success: true, message: "Shifts added successfully", doctor },
             { status: 200 }
         );
 

@@ -3,7 +3,7 @@ import { useHttp } from '@/hooks/useHttpHook';
 import classes from './csvShiftsForm.module.css'
 import { useState } from 'react';
 
-export default function CsvShiftsForm({doctorId, fetchDoctorData}) {
+export default function CsvShiftsForm({doctorId, setDoctor}) {
 
     const [file, setFile] = useState(null); // Состояние для хранения загруженного файла
     const { req, loading, message, error } = useHttp()
@@ -16,9 +16,8 @@ export default function CsvShiftsForm({doctorId, fetchDoctorData}) {
         e.preventDefault();
         const formData = new FormData();
         formData.append('file', file);
-        await req(`/api/doctor/shift/add/xml/${doctorId}`, 'PATCH', formData);
-        console.log(message, error)
-        fetchDoctorData()
+        const response = await req(`/api/doctor/shift/add/xml/${doctorId}`, 'PATCH', formData);
+        setDoctor(response.doctor)
     };
 
     return (

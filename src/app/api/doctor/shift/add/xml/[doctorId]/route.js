@@ -71,7 +71,7 @@ export async function PATCH(req, { params: { doctorId } }) {
                 }
                 if ((value !== currentType || value === null || index === values.length - 1) && from !== null) {
                     // Конец последовательности
-                    const to = index === values.length - 1 ? (index + 1) / 2 : index/2;
+                    const to = index === values.length - 1 ? (index + 1) / 2 : index / 2;
                     doctor.shifts.push({
                         date: { day: dayOfMonth, month, year },
                         from: from.toString(),
@@ -85,15 +85,15 @@ export async function PATCH(req, { params: { doctorId } }) {
             });
         });
 
-        console.log(doctor.shifts)
-
         await doctor.save();
+        doctor.shifts = doctor.shifts.filter(shift => shift.date.month == date.month && shift.date.year == date.year);
+        doctor.eShifts = doctor.eShifts.filter(shift => shift.date.month == date.month && shift.date.year == date.year);
 
         // Возвращаем обработанные данные в виде JSON
         return NextResponse.json(
-            { success: true, message: 'good', data: processedData },
+            { success: true, message: 'sablona byla uspesne pridana', doctor },
             { status: 200 }
-        );
+        )
     } catch (error) {
         console.error("Error processing CSV:", error);
         return NextResponse.json(

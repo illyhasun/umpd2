@@ -7,7 +7,7 @@ export async function PATCH(req, { params: { doctorId } }) {
         await connectDB();
 
         const newShift = await req.json(); // Новая смена с полями date, from и to
-        const { date, from: newFrom, to: newTo, type } = newShift;
+        const { date, from: newFrom, to: newTo, e } = newShift;
 
         // Найти документ врача
         const doctor = await Doctor.findById(doctorId);
@@ -19,7 +19,8 @@ export async function PATCH(req, { params: { doctorId } }) {
         }
 
         // Найти все смены на ту же дату
-        const existingShifts = doctor.shifts.filter(
+        const shifts = e ? doctor.eShifts : doctor.shifts || []
+        const existingShifts = shifts.filter(
             shift =>
                 shift.date.day == date.day &&
                 shift.date.month == date.month &&
@@ -58,7 +59,7 @@ export async function PATCH(req, { params: { doctorId } }) {
         const mergedShifts = newShifts.reduce((acc, shift) => {
             const lastShift = acc[acc.length - 1];
 
-            if (lastShift && lastShift.type === shift.type && lastShift.to === shift.from) {
+            if (lastShift && lastShift.type == shift.type && lastShift.to == shift.from) {
                 // Если смена того же типа и стыкуется, объединяем её с предыдущей
                 lastShift.to = shift.to;
             } else {
@@ -69,19 +70,25 @@ export async function PATCH(req, { params: { doctorId } }) {
             return acc;
         }, []);
 
-        doctor.shifts = doctor.shifts.filter(
+        shifts.splice(0, shifts.length, ...shifts.filter(
             shift => !overlappingShifts.some(
-                s => s.from === shift.from && s.to === shift.to && s.date.day === shift.date.day
+                s => s.from == shift.from && s.to == shift.to && s.date.day == shift.date.day
             )
-        );
+        ));
 
-        doctor.shifts.push(...mergedShifts);
+
+        shifts.push(...mergedShifts);
+
+        
 
         // Сохранить обновленный документ
         await doctor.save();
 
+        doctor.shifts = doctor.shifts.filter(shift => shift.date.month == date.month && shift.date.year == date.year);
+        doctor.eShifts = doctor.eShifts.filter(shift => shift.date.month == date.month && shift.date.year == date.year);
+
         return NextResponse.json(
-            { success: true, message: 'Shift added or merged successfully.' },
+            { success: true, message: 'Shift added or merged successfully.', doctor },
             { status: 200 }
         );
 

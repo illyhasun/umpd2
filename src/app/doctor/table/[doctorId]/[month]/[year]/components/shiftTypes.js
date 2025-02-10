@@ -1,7 +1,7 @@
 import { useHttp } from '@/hooks/useHttpHook';
 import classes from './shiftTypes.module.css'
 
-export default function ShiftTypes({ selectedShiftRange, setSelectedShiftRange, fetchDoctorData, doctorId, setDoctor }) {
+export default function ShiftTypes({ selectedShiftRange, setSelectedShiftRange, doctorId, setDoctor, e }) {
     const { req } = useHttp()
 
     const handleConfirmShift = async (type = 'o') => {
@@ -9,17 +9,19 @@ export default function ShiftTypes({ selectedShiftRange, setSelectedShiftRange, 
         const [day, month, year] = date.split('/');
 
         try {
-            const response = await req(`/api/doctor/shift/add/${doctorId}`, 'PATCH', {
-                date: { day, month, year },
-                from: from.toString(),
-                to: (to + 0.5).toString(), // half-hour intervals
-                type
-            });
+            const response = await req(
+                to - from < 0.5 && type === 'h' ? `/api/doctor/shift/add/service/${doctorId}` : `/api/doctor/shift/add/${doctorId}`,
+                'PATCH',
+                {
+                    date: { day, month, year },
+                    from: from.toString(),
+                    to: (to + 0.5).toString(), // half-hour intervals
+                    type,
+                    e
+                });
 
-            if (response.success) {
-                fetchDoctorData()
-                setSelectedShiftRange({ date: null, from: null, to: null });
-            }
+            setDoctor(response.doctor)
+            setSelectedShiftRange({ date: null, from: null, to: null });
         } catch (error) {
             console.error("Failed to add shift", error);
         }
@@ -33,14 +35,12 @@ export default function ShiftTypes({ selectedShiftRange, setSelectedShiftRange, 
             const response = await req(`/api/doctor/shift/delete/${doctorId}`, 'PATCH', {
                 date: { day, month, year },
                 from: from.toString(),
-                to: (to + 0.5).toString()
+                to: (to + 0.5).toString(),
+                e
             });
 
-            if (response.success) {
-                console.log("Shift deleted successfully");
-                fetchDoctorData()
-                setSelectedShiftRange({ date: null, from: null, to: null });
-            }
+            setDoctor(response.doctor)
+            setSelectedShiftRange({ date: null, from: null, to: null });
         } catch (error) {
             console.error("Failed to delete shift", error);
         }
