@@ -30,6 +30,9 @@ export async function PATCH(req, { params: { doctorId, month, year } }) {
 
         await doctor.save();
 
+        doctor.shifts = doctor.shifts.filter(shift => shift.date.month == month && shift.date.year == year);
+        doctor.eShifts = doctor.eShifts.filter(shift => shift.date.month == month && shift.date.year == year);
+
         return NextResponse.json(
             { success: true, message: 'Smeny byli uspesne zkopirovane', doctor },
             { status: 200 }

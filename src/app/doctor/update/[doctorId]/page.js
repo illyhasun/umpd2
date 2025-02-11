@@ -234,7 +234,6 @@ export default function UpdateDoctor({ params: { doctorId } }) {
                     <label>{day}</label>
                     <input
                       name="workingDays"
-                      placeholder="8"
                       onChange={(e) => handleInputChange(e, index, 'workingTime', 'workingDays', idx)}
                       value={time?.workingDays?.[idx] || ''}
                       disabled={loading}

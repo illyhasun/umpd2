@@ -71,8 +71,12 @@ export async function PATCH(req, { params: { doctorId } }) {
         // Сохранение изменений, если обновления были
         await doctor.save();
 
+        doctor.shifts = doctor.shifts.filter(shift => shift.date.month == date.month && shift.date.year == date.year);
+        doctor.eShifts = doctor.eShifts.filter(shift => shift.date.month == date.month && shift.date.year == date.year);
+
+
         return NextResponse.json(
-            { success: true, message: `Shift(s) updated or removed successfully.` },
+            { success: true, message: `Shift(s) updated or removed successfully.`, doctor },
             { status: 200 }
         );
 

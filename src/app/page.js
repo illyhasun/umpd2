@@ -17,17 +17,9 @@ export default function Doctors() {
     const [doctors, setDoctors] = useState([]);
 
     const allDoctors = async () => {
-        const cachedDoctors = localStorage.getItem('doctors');
-    
-        if (cachedDoctors) {
-            setDoctors(JSON.parse(cachedDoctors));
-            return;
-        }
-    
         try {
             const response = await req("/api/doctor/getAll");
             setDoctors(response.doctors || []);
-            localStorage.setItem('doctors', JSON.stringify(response.doctors || []));
         } catch (error) {
             console.error("Chyba při načítání dat lekářů z databáze", error);
             setDoctors([]);
@@ -40,7 +32,6 @@ export default function Doctors() {
             if (confirmed) {
                 await req(`/api/doctor/delete/${doctor._id}`, 'DELETE');
                 setDoctors((prevDoctors) => prevDoctors.filter((prev) => prev._id !== doctor._id));
-                localStorage.removeItem('doctors'); // Чистим кеш, чтобы при следующем вызове запрос ушел на сервер
             }
         } catch (error) {
             console.log(error);

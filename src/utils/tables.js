@@ -70,16 +70,17 @@ export function getDaysInMonth(holidays, month, year) {
 }
 
 export function getRelevantItem(items, month, year) {
+    console.log(items, month, year)
     if (!Array.isArray(items) || items.length === 0) return null
 
     return items.reduce((latest, current) => {
         const { month: itemMonth, year: itemYear } = current.validFrom
-        const isEarlier = itemYear < year || (itemYear === year && itemMonth <= month)
+        const isEarlier = itemYear < Number(year) || (itemYear == Number(year) && itemMonth <= Number(month))
 
         if (!isEarlier) return latest
         if (!latest) return current
 
         const latestDate = latest.validFrom
-        return (itemYear > latestDate.year || (itemYear === latestDate.year && itemMonth > latestDate.month)) ? current : latest
+        return (itemYear > latestDate.year || (itemYear == latestDate.year && itemMonth > latestDate.month)) ? current : latest
     }, null)
 }
