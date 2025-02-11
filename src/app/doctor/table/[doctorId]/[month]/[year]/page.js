@@ -46,9 +46,6 @@ export default function DoctorShifts({ params: { doctorId, month, year } }) {
     const workingTime = getRelevantItem(doctor?.workingTime, month, year)
     const workingMode = getRelevantItem(doctor?.workingMode, month, year)
 
-    console.log(workingTime, workingMode)
-
-
     const shifts = e ? (doctor?.eShifts ? doctor.eShifts : []) : (doctor?.shifts ? doctor.shifts : [])
     const filteredShifts = shifts.filter(shift => shift.date.month == Number(month) && shift.date.year == Number(year))
 

@@ -19,7 +19,7 @@ export default function Doctors() {
     const allDoctors = async () => {
         try {
             const response = await req("/api/doctor/getAll");
-            setDoctors(response.doctors || []);
+            setDoctors(response.doctors);
         } catch (error) {
             console.error("Chyba při načítání dat lekářů z databáze", error);
             setDoctors([]);
