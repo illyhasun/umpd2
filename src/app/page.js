@@ -37,7 +37,7 @@ export default function Doctors() {
             console.log(error);
         }
     };
-    
+
 
     useEffect(() => {
         allDoctors()
