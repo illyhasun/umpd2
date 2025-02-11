@@ -20,7 +20,7 @@ export const useHttp = () => {
         }
       }
 
-      const res = await fetch(url, { method, body, headers, cache: method == 'GET' ? 'no-store': '' })
+      const res = await fetch(url, { method, body, headers})
       const data = await res.json()
 
       if (!data.success) {

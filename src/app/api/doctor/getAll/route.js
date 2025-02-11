@@ -3,6 +3,8 @@ import { NextResponse } from "next/server"
 import { Doctor } from "@/models/Doctor"
 import { connectDB } from "@/utils/db"
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
     try {
         await connectDB()

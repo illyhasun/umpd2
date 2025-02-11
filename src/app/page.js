@@ -9,8 +9,6 @@ import SearchByPn from './components/searchByPn';
 
 import classes from './page.module.css'
 
-
-
 export default function Doctors() {
 
     const { loading, req, error, message } = useHttp();
