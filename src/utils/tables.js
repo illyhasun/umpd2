@@ -70,12 +70,11 @@ export function getDaysInMonth(holidays, month, year) {
 }
 
 export function getRelevantItem(items, month, year) {
-    console.log(items, month, year)
     if (!Array.isArray(items) || items.length === 0) return null
 
     return items.reduce((latest, current) => {
         const { month: itemMonth, year: itemYear } = current.validFrom
-        const isEarlier = itemYear < Number(year) || (itemYear == Number(year) && itemMonth <= Number(month))
+        const isEarlier = itemYear < Number(year) || (itemYear == year && itemMonth <= Number(month))
 
         if (!isEarlier) return latest
         if (!latest) return current
@@ -83,4 +82,32 @@ export function getRelevantItem(items, month, year) {
         const latestDate = latest.validFrom
         return (itemYear > latestDate.year || (itemYear == latestDate.year && itemMonth > latestDate.month)) ? current : latest
     }, null)
+}
+
+export function calculatePartTimeNorm(hoursArray, days) {
+
+    let totalHours = 0
+    let totalHolidayHours = 0
+
+    for (const day of days) {
+        // `currentDate.getDay()` returns 0 for Sunday, 1 for Monday, ..., 6 for Saturday
+        const dayIndex = day.dayOfWeek === 'PO' ? 0 :
+            day.dayOfWeek === 'ÚT' ? 1 :
+                day.dayOfWeek === 'ST' ? 2 :
+                    day.dayOfWeek === 'ČT' ? 3 :
+                        day.dayOfWeek === 'PÁ' ? 4 :
+                            day.dayOfWeek === 'SO' ? 5 :
+                                day.dayOfWeek === 'NE' ? 6 : -1;
+
+        if (dayIndex === -1) {
+            console.log(`Unrecognized day of the week: ${day.dayOfWeek}`);
+        }
+
+        totalHours += hoursArray[dayIndex];
+        if (day.isHoliday) {
+            totalHolidayHours += hoursArray[dayIndex]
+        }
+    }
+
+    return { totalHours, totalHolidayHours };
 }

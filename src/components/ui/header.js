@@ -6,17 +6,17 @@ export default function Header() {
   return (
     <header className={classes.header}>
       <div>
-        <Link href='/'>Seznám lékářu</Link>
-        <Link href='/template'>Seznám šablon</Link>
+        <Link href='/'>Seznam lékařů</Link>
+        <Link href='/template'>Seznam šablon</Link>
       </div>
       <div>
         <Link href='/doctor/create' className={classes.link}>
           <Image src='/icons/add.svg' alt='add' height={15} width={15} />
-          Přídát lekáře
+          Přidat lekáře
         </Link>
         <Link href='/template/add' className={classes.link}>
           <Image src='/icons/add.svg' alt='add' height={15} width={15} />
-          Přídát šablonů
+          Přidat šablonu
         </Link>
       </div>
     </header>

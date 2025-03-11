@@ -1,40 +1,4 @@
-.table {
-    width: 100%;
-    border-collapse: collapse;
 
-}
-
-.table th,
-.table td {
-    text-align: center;
-    width: calc(100%/12);
-    border: 1px solid var(--primary-font-color);
-    padding: 5px 0;
-}
-
-.info {
-    display: flex;
-    justify-content: space-between;
-    padding: 25px;
-    background-color: var(--primary-bg-color);
-}
-
-.doctorInfo {
-    display: flex;
-}
-
-.doctorInfo p {
-    margin-left: 15px;
-}
-
-.doctorInfo p,
-.doctorInfo h1 {
-    color: var(--primary-font-color);
-}
-
-.more {
-    background-color: tomato;
-}
 
 
 

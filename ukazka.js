@@ -1,4 +1,5 @@
-const text = 'ahoj' //string
-const cislo = 10    //number
-const pravda = true //boolean
+console.log("Toto je zpráva v konzoli.");
+alert("Vyskakovací okno!");
+
+
 

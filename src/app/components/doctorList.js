@@ -24,7 +24,7 @@ export default function DoctorList({ doctors, deleteDoctor }) {
                                 </Link>
                                 <Link href={`/doctor/update/${doctor._id}`}>
                                     <Image src='/icons/update.svg' alt='update' height={15} width={15} />
-                                    OBNOVIT
+                                    UPRAVIT
                                 </Link>
                                 <button onClick={() => deleteDoctor(doctor)}>
                                     <Image src='/icons/delete.svg' alt='delete' height={15} width={15} />

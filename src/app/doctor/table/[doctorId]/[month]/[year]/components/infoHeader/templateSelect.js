@@ -37,7 +37,7 @@ export default function TemplateSelect({ doctorId, setDoctor, month, year, e }) 
 
     return (
         <select className={classes.useTemplates} onChange={(e) => handleConfirmTemplate(e.target.value)}>
-            <option>Výberte šablonu</option>
+            <option>Vyberte šablonu</option>
             {templates?.map(template => <option key={template._id} value={template._id}>{template.name}</option>)}
         </select>
     )

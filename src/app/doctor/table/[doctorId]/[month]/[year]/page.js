@@ -59,7 +59,7 @@ export default function DoctorShifts({ params: { doctorId, month, year } }) {
 
                 <div className={classes.actions}>
                     <button onClick={() => setE(!e)}>{e ? 'E' : 'S'}</button>
-                    {filteredShifts.length === 0 && e && <CopyButton setDoctor={setDoctor} doctorId={doctorId} month={month} year={year}/>}
+                    {filteredShifts.length === 0 && e && <CopyButton setDoctor={setDoctor} doctorId={doctorId} month={month} year={year} />}
 
                     <Link className={classes.a} href={`/doctor/table/${doctorId}/summary/${year}`}>Roční</Link>
                     <MonthYearSelect year={year} month={month} doctor={doctor} />
@@ -73,7 +73,7 @@ export default function DoctorShifts({ params: { doctorId, month, year } }) {
 
             <ShiftTypes selectedShiftRange={selectedShiftRange} setSelectedShiftRange={setSelectedShiftRange} doctorId={doctorId} setDoctor={setDoctor} e={e} />
             <Table selectedShiftRange={selectedShiftRange} setSelectedShiftRange={setSelectedShiftRange} days={days} holidays={holidays} shifts={shifts} />
-            <MonthSummary doctor={doctor} days={days} holidays={holidays} workingTime={workingTime} filteredShifts={filteredShifts} year={year} month={month} />
+            <MonthSummary days={days} holidays={holidays} workingTime={workingTime} filteredShifts={filteredShifts} />
         </main>
     )
 }

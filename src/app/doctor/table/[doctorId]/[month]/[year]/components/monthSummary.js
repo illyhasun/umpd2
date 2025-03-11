@@ -1,35 +1,7 @@
+import { calculatePartTimeNorm } from '@/utils/tables';
 import classes from './monthSummary.module.css'
 
-export default function MonthSummary({ doctor, days, workingTime, holidays, filteredShifts, year, month }) {
-
-    function calculatePartTimeNorm(hoursArray) {
-
-        let totalHours = 0
-        let totalHolidayHours = 0
-
-        for (const day of days) {
-            // `currentDate.getDay()` returns 0 for Sunday, 1 for Monday, ..., 6 for Saturday
-            const dayIndex = day.dayOfWeek === 'PO' ? 0 :
-                day.dayOfWeek === 'ÚT' ? 1 :
-                    day.dayOfWeek === 'ST' ? 2 :
-                        day.dayOfWeek === 'ČT' ? 3 :
-                            day.dayOfWeek === 'PÁ' ? 4 :
-                                day.dayOfWeek === 'SO' ? 5 :
-                                    day.dayOfWeek === 'NE' ? 6 : -1;
-
-            if (dayIndex === -1) {
-                console.log(`Unrecognized day of the week: ${day.dayOfWeek}`);
-            }
-
-            totalHours += hoursArray[dayIndex];
-            if (day.isHoliday) {
-                totalHolidayHours += hoursArray[dayIndex]
-            }
-        }
-
-        return { totalHours, totalHolidayHours };
-    }
-
+export default function MonthSummary({ days, workingTime, holidays, filteredShifts }) {
 
     const NIGHT_START = 22; // 10 PM
     const NIGHT_END = 6;   // 6 AM
@@ -47,7 +19,7 @@ export default function MonthSummary({ doctor, days, workingTime, holidays, filt
 
 
     if (workingTime?.timeName === '2') {
-        const normHours = calculatePartTimeNorm(workingTime.workingDays)
+        const normHours = calculatePartTimeNorm(workingTime.workingDays, days)
         normHolidayHours = normHours.totalHolidayHours
         normPartTimeHours = normHours.totalHours
     } else {
@@ -60,7 +32,7 @@ export default function MonthSummary({ doctor, days, workingTime, holidays, filt
         const { date, from, to, type } = shift;
         const shiftDate = new Date(`${date.month}/${date.day}/${date.year}`);
         const dayOfWeek = shiftDate.getDay();
-        const formattedDate = `${date.day}/${date.month}/${year}`;
+        const formattedDate = `${date.day}/${date.month}/${date.year}`;
 
         let hours = to - from;
 
@@ -114,7 +86,7 @@ export default function MonthSummary({ doctor, days, workingTime, holidays, filt
                     </tr>
                     {normPartTimeHours ? (
                         <tr>
-                            <td>Počet hodin nad uvazek</td>
+                            <td>Počet hodin nad úvazek</td>
                             <td>{Math.max(totalHours - normPartTimeHours - overtimeHours, 0)}</td>
                         </tr>
                     ) : ''}
